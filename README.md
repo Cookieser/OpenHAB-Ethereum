@@ -1,15 +1,14 @@
-# 合约开发
+# Contract Development
 
-## 数据结构
+## Data Structure
 
-* 设备索引
-* 设备名称
-* 设备品牌
-* 类别
-* 图片链接
-* 描述介绍链接
-* 设备加入时间
-* 设备状态（开、关）
+- Device Index
+- Device Name
+- Category
+- Image Link
+- Description Link
+- Device Start Time
+- Device Status (On, Off)
 
 ```solidity
 enum DeviceStatus {Open, Close}
@@ -35,25 +34,17 @@ enum DeviceStatus {Open, Close}
 
 
 
-## 添加设备
+## Adding a Device
 
-向链上添加并检索设备
+To add and retrieve devices on the blockchain:
 
-1，新建 addDeviceToStore 的函数，参数为构建 product 结构的所需内容
-
-2， deviceIndex计数加 1，获得设备唯一ID
-
-3，信息校验：使用 require 来验证传入信息是否合理（比如开始工作时间是否先于结束工作时间）
-
-4，初始化 Device 结构，并用传入函数的参数进行填充
-
-5，将初始化后的结构存储在 stores mapping
-
-6，同时在 deviceIdInStore mapping 中记录是谁添加了设备
-
-7，创建一个getDevice 的函数，它将 deviceId 作为一个参数，在 stores mapping 中查询设备，返回设备细节
-
-
+1. Create a function named `addDeviceToStore` with parameters required to construct the Device structure.
+2. Increment `deviceIndex` by 1 to get a unique ID for the device.
+3. Validate the information using `require` to ensure the passed information is logical (e.g., the start time is before the end time).
+4. Initialize the Device structure and fill it with parameters from the function.
+5. Store the initialized structure in the `stores` mapping.
+6. Record who added the device in the `deviceIdInStore` mapping.
+7. Create a function named `getDevice` that takes `deviceId` as a parameter, queries the device in the `stores` mapping, and returns the device details.
 
 ```solidity
 function addDeviceToStore(string _name, string _category, string _imageLink, string _descLink, uint _deviceStartTime) public {
@@ -70,12 +61,45 @@ function getDevice(uint _deviceId) view public returns (uint, string, string, st
 }
 ```
 
-
-
-
+Example Input:
 
 ```
 "iPhone 13", "Electronics", "http://example.com/iphone.jpg", "http://example.com/iphone_desc.txt",1646188800
 ```
 
-如果你留心的话，我们在两个函数中都用了一个叫做 memory 的关键字来存储商品。之所以用这个关键字，是为了告诉 EVM 这个对象仅作为临时变量。一旦函数执行完毕，该变量就会从内存中清除。
+In both functions, the `memory` keyword is used to store the device temporarily. This keyword signals to the EVM that this object is only a temporary variable and will be cleared from memory once the function execution is complete.
+
+
+
+## Data Collection and Storage
+
+Real-time data collection from sensors
+
+Collection of user operation commands、
+
+```
+web3.sha3("10.5"+"secretstring")
+```
+
+device--user -- hash -- value
+
+
+
+## State Verification and Historical Status Query
+
+Function description: The user inputs the time, device ID/name, and status to verify the information's authenticity.
+
+Input: Time for verification, device ID/name, status for verification
+
+Return: true/false
+
+## Permission Management
+
+Design specific scenario-based permission contracts and add conditional checks to the previously implemented contract code as necessary.
+
+## Device Status Control
+
+Translate the features and functionality into contract logic to manage device states effectively.
+
+
+
