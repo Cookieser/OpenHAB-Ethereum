@@ -1,105 +1,89 @@
-# Contract Development
+# Project Structure
 
-## Data Structure
+- Web: Stores interactive web pages.
+- Contract: Stores smart contracts.
+- Notes: Records of the setup process and related learning notes (English version).
+- Notes_CN: Records of the setup process and related learning notes (Chinese version).
 
-- Device Index
-- Device Name
-- Category
-- Image Link
-- Description Link
-- Device Start Time
-- Device Status (On, Off)
+# Task List
 
-```solidity
-enum DeviceStatus {Open, Close}
+## Part 1: Building the Simplest Prototype System
 
- uint public deviceIndex;
- mapping (address => mapping(uint => Device)) stores;
- mapping (uint => address) deviceIdInStore;
+- [x] ### Blockchain Setup (Preliminary Ethereum Setup)
 
- struct Device {
-  uint id;
-  string name;
-  string category;
-  string imageLink;
-  string descLink;
-  uint deviceStartTime;
-  DeviceStatus status;
- }
+The basic setup and operation of the Ethereum blockchain have been completed, enabling the running of blockchain nodes under Linux and performing basic command tests.
 
- constructor() public {
-  deviceIndex = 0;
- }
-```
+See documentation for specific process records: `Notes/blockChainBuild.md`
 
+- [x] ### Contract Development
 
+Completed the writing of contracts for **adding devices** and **displaying registered devices**.
 
-## Adding a Device
+See documentation for the specific process records and design thoughts: `Notes/contractDesign.md`
 
-To add and retrieve devices on the blockchain:
+Knowledge and advantages of Events: `Notes/Event.md`
 
-1. Create a function named `addDeviceToStore` with parameters required to construct the Device structure.
-2. Increment `deviceIndex` by 1 to get a unique ID for the device.
-3. Validate the information using `require` to ensure the passed information is logical (e.g., the start time is before the end time).
-4. Initialize the Device structure and fill it with parameters from the function.
-5. Store the initialized structure in the `stores` mapping.
-6. Record who added the device in the `deviceIdInStore` mapping.
-7. Create a function named `getDevice` that takes `deviceId` as a parameter, queries the device in the `stores` mapping, and returns the device details.
+Contract: `Contract/DeviceStore.sol`
 
-```solidity
-function addDeviceToStore(string _name, string _category, string _imageLink, string _descLink, uint _deviceStartTime) public {
-  //require ();
-  deviceIndex += 1;
-  Device memory device = Device(deviceIndex, _name, _category, _imageLink, _descLink, _deviceStartTime,DeviceStatus.Open);
-  stores[msg.sender][deviceIndex] = product;
-  deviceIdInStore[deviceIndex] = msg.sender;
-}
+- [x] ### Web Page Visualization Writing
 
-function getDevice(uint _deviceId) view public returns (uint, string, string, string, string, uint, DeviceStatus) {
-  Devicet memory device = stores[deviceIdInStore[_deviceId]][_deviceId];
-  return (device.id, device.name, device.category, device.imageLink, device.descLink, device.deviceStartTime, device.status);
-}
-```
+> How to use: Use [Remix](https://remix.ethereum.org/) to connect to [Ganache](https://archive.trufflesuite.com/docs/ganache/) for contract testing.
+>
+> Note: During testing, be sure to modify the Ganache port and the deployed contract address in the JavaScript code.
 
-Example Input:
+Implemented control over contract functionalities through web pages, achieving **adding devices** and **updating the display of registered devices**.
 
-```
-"iPhone 13", "Electronics", "http://example.com/iphone.jpg", "http://example.com/iphone_desc.txt",1646188800
-```
+Web page reference: `Web/device.html`
 
-In both functions, the `memory` keyword is used to store the device temporarily. This keyword signals to the EVM that this object is only a temporary variable and will be cleared from memory once the function execution is complete.
+Simple test of initial blockchain connection and display of account balance:
 
+Web page reference: `Web/test/connectTest.html`
 
+Test simple contract interaction:
 
-## Data Collection and Storage
+Web page reference: `Web/test/toyContactTest.html`
 
-Real-time data collection from sensors
+Using contract: `Contract/test.sol`
 
-Collection of user operation commands、
+- [ ] ### Integration Design of Ethereum and OpenHAB Systems
 
-```
-web3.sha3("10.5"+"secretstring")
-```
+This part analyzes the requirements of the entire system, realizes the integration between the two, and analyzes the specific execution steps of specific functions.
 
-device--user -- hash -- value
+See documentation: `systemDesign.md`
 
+- [x] ### MongoDB Environment Setup
 
+Completed the MongoDB environment setup in a virtual machine, facilitating subsequent synchronization updates between blockchain and MongoDB.
 
-## State Verification and Historical Status Query
+See documentation: `Notes/MongoDB.md`
 
-Function description: The user inputs the time, device ID/name, and status to verify the information's authenticity.
+- [ ] ### Testing the Prototype System with Real Sensors Combined with OpenHAB
 
-Input: Time for verification, device ID/name, status for verification
+Test the above system by connecting real sensors through OpenHAB.
 
-Return: true/false
+- **Choose specific sensor models for testing**:
+  - **Xiaomi Sensors**: Compact, accurate, and value for money, easily integrated with OpenHAB through Xiaomi Gateway or a generic Zigbee gateway. Notably small and cost-effective.
+  - **SONOFF SNZB-02 ZigBee Temperature and Humidity Sensor**: A cost-effective solution for monitoring, with long battery life and broad compatibility.
+- **Modify the JavaScript code in the interaction page** to adjust according to the OpenHAB API.
+- **Adjust the data structure** according to the specific JSON structure, adjusting the smart contract and the front-end and back-end interaction parts accordingly.
 
-## Permission Management
+**As of now, we can synchronize device information on the blockchain with devices on OpenHAB. Specifically, when adding or deleting devices through OpenHAB, the blockchain records this operation, marking the executor, execution time, and other important information.**
 
-Design specific scenario-based permission contracts and add conditional checks to the previously implemented contract code as necessary.
+## Part 2: System Improvement and Feature Addition
 
-## Device Status Control
+- Simulate sensor data collection.
+- Implement permission management based on DID design.
+- Enable device status control through OpenHAB and smart contracts.
+- Allow users to verify specific historical states of specific devices.
+- Update interaction interfaces based on the above changes.
+- Expand blockchain nodes to achieve information synchronization among multiple nodes.
+- Try different underlying chain structures for performance testing and quantitative comparison.
+- Use MongoDB to achieve accelerated query in synchronization with the blockchain.
 
-Translate the features and functionality into contract logic to manage device states effectively.
+## Part 3
 
+Record some interesting problems and thoughts discovered during the project:
 
-
+- Consider using group hash processing or Merkle tree hash to improve efficiency in the hashing upload process.
+- Explore adding layer 2 solutions, such as [Optimistic Rollup], to improve efficiency.
+- Combine with [Zero-Knowledge Proof] for subsequent work.
