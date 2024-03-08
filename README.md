@@ -9,13 +9,13 @@
 
 ## Part 1: Building the Simplest Prototype System
 
-- [x] ### Blockchain Setup (Preliminary Ethereum Setup)
+### Blockchain Setup (Preliminary Ethereum Setup) √
 
 The basic setup and operation of the Ethereum blockchain have been completed, enabling the running of blockchain nodes under Linux and performing basic command tests.
 
 See documentation for specific process records: `Notes/blockChainBuild.md`
 
-- [x] ### Contract Development
+### Contract Development √
 
 Completed the writing of contracts for **adding devices** and **displaying registered devices**.
 
@@ -25,7 +25,7 @@ Knowledge and advantages of Events: `Notes/Event.md`
 
 Contract: `Contract/DeviceStore.sol`
 
-- [x] ### Web Page Visualization Writing
+### Web Page Visualization Writing √
 
 > How to use: Use [Remix](https://remix.ethereum.org/) to connect to [Ganache](https://archive.trufflesuite.com/docs/ganache/) for contract testing.
 >
@@ -45,19 +45,19 @@ Web page reference: `Web/test/toyContactTest.html`
 
 Using contract: `Contract/test.sol`
 
-- [ ] ### Integration Design of Ethereum and OpenHAB Systems
+### Integration Design of Ethereum and OpenHAB Systems
 
 This part analyzes the requirements of the entire system, realizes the integration between the two, and analyzes the specific execution steps of specific functions.
 
 See documentation: `systemDesign.md`
 
-- [x] ### MongoDB Environment Setup
+### MongoDB Environment Setup √
 
 Completed the MongoDB environment setup in a virtual machine, facilitating subsequent synchronization updates between blockchain and MongoDB.
 
 See documentation: `Notes/MongoDB.md`
 
-- [ ] ### Testing the Prototype System with Real Sensors Combined with OpenHAB
+### Testing the Prototype System with Real Sensors Combined with OpenHAB  
 
 Test the above system by connecting real sensors through OpenHAB.
 
@@ -71,19 +71,41 @@ Test the above system by connecting real sensors through OpenHAB.
 
 ## Part 2: System Improvement and Feature Addition
 
-- Simulate sensor data collection.
-- Implement permission management based on DID design.
-- Enable device status control through OpenHAB and smart contracts.
-- Allow users to verify specific historical states of specific devices.
-- Update interaction interfaces based on the above changes.
-- Expand blockchain nodes to achieve information synchronization among multiple nodes.
-- Try different underlying chain structures for performance testing and quantitative comparison.
-- Use MongoDB to achieve accelerated query in synchronization with the blockchain.
+
+- Simulation of Sensor Data Collection
+
+Write a script to simulate data transmission, testing the following functionalities: Accept JSON data, select certain key data for hash processing, store it on the blockchain, and provide a matching verification function and user interface.
+
+- Permission Management
+
+Design detailed permission management layers based on DID (Decentralized Identifier), and implement corresponding contract code.
+
+- Device State Control
+
+Implement collaboration among multiple devices through openHAB and smart contracts, ensuring that control commands are recorded on the blockchain for traceability and security.
+
+- Device State Verification
+
+Allow users to verify specific historical states of specific devices, providing advanced search capabilities such as filtering records by date, time, or state type.
+
+- Web Visualization Updates
+
+Modify the user interface based on the above changes.
+
+- Blockchain Node Expansion
+
+Attempt to add multiple nodes and achieve normal information synchronization.
+
+Try different underlying blockchain structures and conduct specific performance tests, quantitatively comparing specific attributes.
+
+- Accelerated Query
+
+Implement accelerated querying by synchronizing MongoDB with the blockchain.
 
 ## Part 3
 
 Record some interesting problems and thoughts discovered during the project:
 
 - Consider using group hash processing or Merkle tree hash to improve efficiency in the hashing upload process.
-- Explore adding layer 2 solutions, such as [Optimistic Rollup], to improve efficiency.
-- Combine with [Zero-Knowledge Proof] for subsequent work.
+- Explore adding layer 2 solutions, such as [Optimistic Rollup](https://blog.thirdweb.com/what-is-an-optimistic-rollup/), to improve efficiency.
+- Combine with [Zero-Knowledge Proof](https://en.wikipedia.org/wiki/Zero-knowledge_proof) for subsequent work.
