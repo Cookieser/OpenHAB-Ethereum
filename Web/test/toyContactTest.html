@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Info Contract Demo</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Info Contract Demo</h1>
+        <div>
+            <label for="name">Name:</label>
+            <input type="text" id="name">
+        </div>
+        <div>
+            <label for="age">Age:</label>
+            <input type="text" id="age">
+        </div>
+        <div>
+            <button id="setInfoButton">Set Info</button>
+            <button id="getInfoButton">Get Info</button>
+        </div>
+        <div id="info"></div>
+    </div>
+
+    <!-- 引入 web3.js -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.3/dist/web3.min.js"></script>
+    <script>
+        // 定义智能合约 ABI 和地址
+        const contractABI = [
+            {
+                "constant": false,
+                "inputs": [
+                    {"name": "_name", "type": "string"},
+                    {"name": "_age", "type": "uint256"}
+                ],
+                "name": "setInfo",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "getInfo",
+                "outputs": [
+                    {"name": "", "type": "string"},
+                    {"name": "", "type": "uint256"}
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+        const contractAddress = '0xeA0087dccDEcD3782c9bdad9465F055Df9a10B7e'; // 你的智能合约地址
+
+        // 创建 Web3 实例
+        let web3;
+        if (typeof window.ethereum !== 'undefined') {
+            web3 = new Web3(window.ethereum);
+            window.ethereum.enable(); // 请求用户授权
+        } else {
+            // 使用本地节点
+            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
+        }
+
+        // 创建智能合约实例
+        const infoContract = new web3.eth.Contract(contractABI, contractAddress);
+
+        // 设置按钮点击事件处理函数
+        // 设置按钮点击事件处理函数
+document.getElementById("setInfoButton").addEventListener("click", async () => {
+    // 从输入框中获取姓名和年龄
+    const name = document.getElementById("name").value;
+    const age = parseInt(document.getElementById("age").value);
+
+    try {
+        // 获取节点上的所有账户
+        const accounts = await web3.eth.getAccounts();
+        // 选择第一个账户作为发送者账户
+        const sender = accounts[0];
+
+        // 调用智能合约的 setInfo 函数来设置姓名和年龄，并指定发送者地址
+        await infoContract.methods.setInfo(name, age).send({from: sender});
+        
+        // 设置成功后弹出提示框
+        alert("Info updated successfully!");
+    } catch (error) {
+        // 如果发生错误，打印错误信息到控制台
+        console.error("Error occurred:", error);
+        // 弹出错误提示框
+        alert("Error occurred! Please check the console for details.");
+    }
+});
+
+        // 获取按钮点击事件处理函数
+        document.getElementById("getInfoButton").addEventListener("click", async () => {
+            try {
+                // 调用智能合约的 getInfo 函数获取信息
+                const info = await infoContract.methods.getInfo().call();
+                // 显示信息在页面上
+                document.getElementById("info").innerHTML = "Name: " + info[0] + "<br>Age: " + info[1];
+            } catch (error) {
+                // 如果发生错误，打印错误信息到控制台
+                console.error("Error occurred:", error);
+                // 清空信息并弹出错误提示框
+                document.getElementById("info").innerHTML = "";
+                alert("Error occurred! Please check the console for details.");
+            }
+        });
+    </script>
+</body>
+</html>
