@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Info Demo</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        input[type="text"], button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            box-sizing: border-box; /* Ensures padding does not affect overall width */
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #deviceInfo {
+            background-color: #e9ecef;
+            padding: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Device Info Demo</h1>
+        
+        <div class="add-device-form">
+            <h2>Add New Device</h2>
+            <input type="text" id="deviceName" placeholder="Name">
+            <input type="text" id="deviceCategory" placeholder="Category">
+            <input type="text" id="deviceImageLink" placeholder="Image Link">
+            <input type="text" id="deviceDescLink" placeholder="Description Link">
+            <input type="text" id="deviceStartTime" placeholder="Start Time (UNIX Timestamp)" value="1709856000">
+            <button id="addDeviceButton">Add Device</button>
+        </div>
+        
+        <div>
+            <label for="deviceId">Device ID:</label>
+            <input type="text" id="deviceId">
+        </div>
+        <div>
+            <button id="getDeviceInfoButton">Get Device Info</button>
+        </div>
+        <div id="deviceInfo"></div>
+        <button id="showAllDevicesButton">Show All Devices</button>
+    </div>
+    
+   
+
+    <!-- Include web3.js -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.3/dist/web3.min.js"></script>
+    <script>
+        // Update the smart contract ABI and address
+        const contractABI = [
+            // Include only the functions' ABI you need
+            {
+                "constant": false,
+                "inputs": [
+                    {"name": "_name", "type": "string"},
+                    {"name": "_category", "type": "string"},
+                    {"name": "_imageLink", "type": "string"},
+                    {"name": "_descLink", "type": "string"},
+                    {"name": "_deviceStartTime", "type": "uint256"}
+                ],
+                "name": "addDeviceToStore",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "deviceIndex",
+                "outputs": [{"name": "", "type": "uint256"}],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [{"name": "_deviceId", "type": "uint256"}],
+                "name": "getDevice",
+                "outputs": [
+                    {"name": "", "type": "uint256"},
+                    {"name": "", "type": "string"},
+                    {"name": "", "type": "string"},
+                    {"name": "", "type": "string"},
+                    {"name": "", "type": "string"},
+                    {"name": "", "type": "uint256"},
+                    {"name": "", "type": "uint8"}
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+        const contractAddress = '0xa0A8164EF062c7644Deb4682523256CDbC59BCfB'; // Your smart contract address
+
+        // Create a Web3 instance
+        let web3;
+        if (typeof window.ethereum !== 'undefined') {
+            web3 = new Web3(window.ethereum);
+            window.ethereum.enable(); // Request user authorization
+        } else {
+            // Use a local node
+            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
+        }
+
+        // Create a smart contract instance
+        const infoContract = new web3.eth.Contract(contractABI, contractAddress);
+
+        // Event listener for getting device information
+        document.getElementById("getDeviceInfoButton").addEventListener("click", async () => {
+            const deviceId = parseInt(document.getElementById("deviceId").value);
+            try {
+                const deviceInfo = await infoContract.methods.getDevice(deviceId).call();
+                document.getElementById("deviceInfo").innerHTML = `ID: ${deviceInfo[0]}<br>Name: ${deviceInfo[1]}<br>Category: ${deviceInfo[2]}<br>Image Link: ${deviceInfo[3]}<br>Description Link: ${deviceInfo[4]}<br>Device Start Time: ${new Date(deviceInfo[5] * 1000).toLocaleString()}<br>Status: ${deviceInfo[6] == 0 ? 'Open' : 'Close'}`;
+            } catch (error) {
+                console.error("Error occurred:", error);
+                document.getElementById("deviceInfo").innerHTML = "";
+                alert("Error occurred! Please check the console for details.");
+            }
+        });
+
+        document.getElementById("showAllDevicesButton").addEventListener("click", async () => {
+    try {
+        // First, get the total number of devices
+        const deviceCount = await infoContract.methods.deviceIndex().call();
+        let allDevicesInfo = "";
+
+        // Iterate over all device IDs, starting from 1, as device IDs may start from 1 in the contract
+        for (let i = 1; i <= deviceCount; i++) {
+            // For each device ID, call the getDevice method to fetch its information
+            const deviceInfo = await infoContract.methods.getDevice(i).call();
+
+            // Build the HTML string for device information
+            allDevicesInfo += `ID: ${deviceInfo[0]}<br>Name: ${deviceInfo[1]}<br>Category: ${deviceInfo[2]}<br>Image Link: ${deviceInfo[3]}<br>Description Link: ${deviceInfo[4]}<br>Device Start Time: ${new Date(deviceInfo[5] * 1000).toLocaleString()}<br>Status: ${deviceInfo[6] == 0 ? 'Open' : 'Close'}<br><br>`;
+        }
+
+        // Display all device information on the page
+        document.getElementById("deviceInfo").innerHTML = allDevicesInfo;
+    } catch (error) {
+        console.error("Error occurred:", error);
+        document.getElementById("deviceInfo").innerHTML = "Error occurred! Please check the console for details.";
+        alert("Error occurred! Please check the console for details.");
+    }
+});
+
+
+document.getElementById("addDeviceButton").addEventListener("click", async () => {
+    const name = document.getElementById("deviceName").value;
+    const category = document.getElementById("deviceCategory").value;
+    const imageLink = document.getElementById("deviceImageLink").value;
+    const descLink = document.getElementById("deviceDescLink").value;
+    const deviceStartTime = parseInt(document.getElementById("deviceStartTime").value); // Ensure it's a number
+
+    try {
+        // Get the current accounts from the node
+        const accounts = await web3.eth.getAccounts();
+        if (accounts.length == 0) {
+            alert("No account is available");
+            return;
+        }
+        const account = accounts[0];
+
+        // Modify here to increase gas limit
+        await infoContract.methods.addDeviceToStore(name, category, imageLink, descLink, deviceStartTime)
+          .send({from: account, gas: 500000}); // Note the increased gas parameter
+
+        alert("Device added successfully!");
+    } catch (error) {
+        console.error("An error occurred:", error);
+        alert("Failed to add device. Please check the console for more details.");
+    }
+});
+    </script>
+</body>
+</html>
