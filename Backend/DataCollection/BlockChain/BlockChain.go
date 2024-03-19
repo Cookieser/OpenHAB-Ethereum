@@ -1,24 +1,18 @@
-package main
+package BlockChain
 
 import (
     "context"
-    "crypto/sha256"
-    "encoding/hex"
-    "encoding/json"
     "fmt"
-    "io/ioutil"
-    "math/big"
-    "net/http"
-    "strings"
-    "time"
     "log"
-
-    "github.com/ethereum/go-ethereum/accounts/abi"
+    "math/big"
+    "github.com/spf13/viper"
     "github.com/ethereum/go-ethereum/common"
+    "github.com/ethereum/go-ethereum/ethclient"
+   "github.com/ethereum/go-ethereum/accounts/abi"
     "github.com/ethereum/go-ethereum/core/types"
     "github.com/ethereum/go-ethereum/crypto"
-    "github.com/ethereum/go-ethereum/ethclient"
-    "github.com/spf13/viper"
+    "strings"
+    "time"
 )
 
 type TemperatureData struct {
@@ -28,72 +22,33 @@ type TemperatureData struct {
     Timestamp   string  `json:"timestamp"`
 }
 
-func main() {
+func Init() {
 
-    
-
-    http.HandleFunc("/temperature", handleTemperature)
-    fmt.Println("Server is listening on port 8080...")
-    if err := http.ListenAndServe(":8080", nil); err != nil {
-        fmt.Printf("Error starting server: %s\n", err)
+    client, err := ethclient.Dial("http://localhost:7545")
+    if err != nil {
+        log.Fatalf("无法连接到以太坊客户端: %v", err)
     }
+    fmt.Println("成功连接到以太坊客户端")
+
+
+    account := common.HexToAddress("0xB4ba642eF0C62aF4ED6fc8cfc2d09001232884Ec")
+    balance, err := client.BalanceAt(context.Background(), account, nil) 
+    if err != nil {
+        log.Fatalf("无法获取账户余额: %v", err)
+    }
+    fmt.Println("成功获取账户余额")
+
+    balanceInEther := new(big.Float).Quo(new(big.Float).SetInt(balance), big.NewFloat(1e18))
+    fmt.Printf("账户余额: %f ETH\n", balanceInEther)
 }
 
-func handleTemperature(w http.ResponseWriter, r *http.Request) {
-    if r.Method != "POST" {
-        http.Error(w, "Only POST method is accepted", http.StatusMethodNotAllowed)
-        return
-    }
-
-    body, err := ioutil.ReadAll(r.Body)
-    if err != nil {
-        http.Error(w, "Error reading request body", http.StatusInternalServerError)
-        return
-    }
-    defer r.Body.Close()
-
-    var data TemperatureData
-    if err := json.Unmarshal(body, &data); err != nil {
-        http.Error(w, "Error parsing request body", http.StatusBadRequest)
-        return
-    }
-
-    hashedData, err := hashTemperatureData(data)
-    if err != nil {
-        fmt.Println("Error hashing data:", err)
-        http.Error(w, "Error hashing data", http.StatusInternalServerError)
-        return
-    }
-
-    fmt.Printf("Received data: %+v\n", data)
-    fmt.Println("Hashed Data:", hashedData)
 
 
-    if err := sendToContract(data); err != nil {
-        http.Error(w, "Error sending data to the contract", http.StatusInternalServerError)
-        return
-    }
-
-    w.WriteHeader(http.StatusOK)
-    w.Write([]byte("Data received and processed"))
-}
-
-func hashTemperatureData(data TemperatureData) (string, error) {
-    dataString := fmt.Sprintf("%d:%f:%s", data.DeviceId, data.Temperature, data.Timestamp)
-    hash := sha256.New()
-    _, err := hash.Write([]byte(dataString))
-    if err != nil {
-        return "", err
-    }
-    hashedData := hex.EncodeToString(hash.Sum(nil))
-    return hashedData, nil
-}
-
-func sendToContract(data TemperatureData) error {
+func SendToContract(data TemperatureData) error {
 
     viper.SetConfigName("config")
     viper.SetConfigType("yaml")
-    viper.AddConfigPath("../..")
+    viper.AddConfigPath(".")
     err := viper.ReadInConfig()
     if err != nil {
         log.Fatalf("Fatal error config file: %v \n", err)
