@@ -8,13 +8,13 @@ import (
 )
 
 // TemperatureRecord holds the temperature data
+
+
 type TemperatureRecord struct {
-	DeviceID  int
-	Timestamp int64
-	Value     int
+    DeviceId    int64   `json:"deviceId"`
+    Temperature float64 `json:"temperature"`
+    Timestamp   string  `json:"timestamp"` // This matches the client's format.
 }
-
-
 
 
 // initDB initializes and verifies a connection to the database.
@@ -37,24 +37,19 @@ func InitDB(dataSourceName string) (*sql.DB, error) {
     }
 
     // If everything is okay, return the database connection.
-    fmt.Println("Successfully connected to the database!")
+    fmt.Println("Connection to Database -------------------------------- Success!!!")
     return db, nil
 }
 
 
 
 
-
-
-
-
-
-
-
 // insertTemperatureRecord inserts a single temperature record into the database
 func InsertTemperatureRecord(db *sql.DB, record TemperatureRecord) error {
+	formattedTemperature := fmt.Sprintf("%.6f", record.Temperature)
+	   // fmt.Println("formattedTemperature:", formattedTemperature)
 	_, err := db.Exec("INSERT INTO Temperature (Device_ID, Timestamp, Value) VALUES (?, ?, ?)",
-		record.DeviceID, record.Timestamp, record.Value)
+		record.DeviceId, record.Timestamp, formattedTemperature)
 	if err != nil {
 		return err
 	}

@@ -1,0 +1,94 @@
+ethereumNodeURL: "http://localhost:7545"
+privateKey: "0xbfc9398e9d23cbe2cc81114096f2123893313f6c3280972b602af39ab08494aa"
+DataCollectionContractAddress: "0x84f0eB60E8a4828470dCfbA5A06B8Fb2A44C172D"
+DataCollectionabi: >
+ [
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_deviceId",
+        "type": "int64"
+      },
+      {
+        "name": "_dataHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "recordDataHash",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_deviceId",
+        "type": "int64"
+      },
+      {
+        "name": "_temperature",
+        "type": "int64"
+      },
+      {
+        "name": "_unit",
+        "type": "string"
+      },
+      {
+        "name": "_timestamp",
+        "type": "string"
+      }
+    ],
+    "name": "recordTemperature",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "deviceId",
+        "type": "int64"
+      },
+      {
+        "indexed": false,
+        "name": "temperature",
+        "type": "int64"
+      },
+      {
+        "indexed": false,
+        "name": "unit",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "name": "timestamp",
+        "type": "string"
+      }
+    ],
+    "name": "TemperatureRecorded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "deviceId",
+        "type": "int64"
+      },
+      {
+        "indexed": false,
+        "name": "dataHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "DataHashRecorded",
+    "type": "event"
+  }
+ ]
