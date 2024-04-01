@@ -109,3 +109,13 @@ Record some interesting problems and thoughts discovered during the project:
 - Consider using group hash processing or Merkle tree hash to improve efficiency in the hashing upload process.
 - Explore adding layer 2 solutions, such as [Optimistic Rollup](https://blog.thirdweb.com/what-is-an-optimistic-rollup/), to improve efficiency.
 - Combine with [Zero-Knowledge Proof](https://en.wikipedia.org/wiki/Zero-knowledge_proof) for subsequent work.
+
+# Unfinished Task
+* The custom properties in the vertify section are not completely separated
+* The operationmanage section will also be handled with specifications
+* Add more little function to show the extensibility
+* Add DID into the system
+* test the whole system, and debug
+* Reconstructure the system to  embody the connection between openhab and blockchain
+* Add special notes and upadate README 
+
