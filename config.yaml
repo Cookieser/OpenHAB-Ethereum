@@ -1,51 +1,100 @@
+database:
+  username: root
+  password: root
+  host: localhost
+  port: 3306
+  dbname: DataCollection
 ethereumNodeURL: "http://localhost:7545"
-privateKey: "2b955afcaa3a6e5747c02c1f3c5a6ed1295cc351415cbd14affcf73ee979dee8"
-DataCollectionContractAddress: "0x546449Ee684DbaB4532Aeb6603E128eB29387466"
+privateKey: "bfc9398e9d23cbe2cc81114096f2123893313f6c3280972b602af39ab08494aa"
+DataCollectionContractAddress: "0x84f0eB60E8a4828470dCfbA5A06B8Fb2A44C172D"
 DataCollectionabi: >
-  [
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "_deviceId",
-          "type": "uint256"
-        },
-        {
-          "name": "_timestamp",
-          "type": "uint256"
-        },
-        {
-          "name": "_value",
-          "type": "uint256"
-        }
-      ],
-      "name": "addData",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "name": "deviceId",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "name": "timestamp",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "name": "value",
-          "type": "uint256"
-        }
-      ],
-      "name": "DataAdded",
-      "type": "event"
-    }
-  ]
-
+ [
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_deviceId",
+        "type": "int64"
+      },
+      {
+        "name": "_dataHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "recordDataHash",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_deviceId",
+        "type": "int64"
+      },
+      {
+        "name": "_temperature",
+        "type": "int64"
+      },
+      {
+        "name": "_unit",
+        "type": "string"
+      },
+      {
+        "name": "_timestamp",
+        "type": "string"
+      }
+    ],
+    "name": "recordTemperature",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "deviceId",
+        "type": "int64"
+      },
+      {
+        "indexed": false,
+        "name": "temperature",
+        "type": "int64"
+      },
+      {
+        "indexed": false,
+        "name": "unit",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "name": "timestamp",
+        "type": "string"
+      }
+    ],
+    "name": "TemperatureRecorded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "deviceId",
+        "type": "int64"
+      },
+      {
+        "indexed": false,
+        "name": "dataHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "DataHashRecorded",
+    "type": "event"
+  }
+ ]
