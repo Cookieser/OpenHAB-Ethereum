@@ -2,20 +2,19 @@ pragma solidity ^0.4.24;
 
 contract DataCollect {
 
-    // 定义一个结构体来存储每个传感器的数据
+    // Define a structure to store data for each sensor
     struct SensorData {
-        uint deviceId;
-        uint timestamp;
-        uint value;
+        uint deviceId;    // Unique identifier for the sensor
+        uint timestamp;   // Timestamp when the data is recorded
+        uint value;       // Sensor value at the timestamp
     }
 
-
-    // 定义一个事件，每当有新数据被添加时触发
+    // Event triggered whenever new sensor data is added
     event DataAdded(uint indexed deviceId, uint timestamp, uint value);
 
-    // 定义一个函数来添加新的传感器数据
+    // Function to add new sensor data
     function addData(uint _deviceId, uint _timestamp, uint _value) public {
-        // 触发事件
+        // Trigger the event
         emit DataAdded(_deviceId, _timestamp, _value);
     }
 }
