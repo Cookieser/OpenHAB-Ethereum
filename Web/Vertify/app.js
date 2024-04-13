@@ -12,8 +12,8 @@ document.getElementById('loadContract').addEventListener('click', function() {
         try {
             const yamlContent = event.target.result;
             const parsedYaml =  jsyaml.safeLoad(yamlContent);
-	    const contractABI = JSON.parse(parsedYaml.DataCollectionabi);      //Change the contractABI via yaml here!
-            const contractAddress = parsedYaml.DataCollectionContractAddress;  //Change the ContractAddress via yaml here!
+	    const contractABI = JSON.parse(parsedYaml.DataCollectionabi);      
+            const contractAddress = parsedYaml.DataCollectionContractAddress;  
 
             if (contractABI && contractAddress) {
                 const blockchainDataManager = new BlockchainDataManager(contractABI, contractAddress);
@@ -75,7 +75,7 @@ document.getElementById('loadContract').addEventListener('click', function() {
         if (!eventDataElement) return;
 
         const newEventElement = document.createElement('p');
-        newEventElement.textContent = `ID - ${event.returnValues.deviceId}, Hash: - ${event.returnValues.dataHash}`;  // Change the display of data Here! 
+        newEventElement.textContent = `ID - ${event.returnValues.deviceId}, Hash: - ${event.returnValues.dataHash}`;   
         eventDataElement.appendChild(newEventElement);
     }
 }

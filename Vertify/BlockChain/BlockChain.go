@@ -2,38 +2,35 @@ package BlockChain
 
 import (
     "context"
+    "encoding/hex"
     "fmt"
     "log"
     "math/big"
-    "github.com/spf13/viper"
+    "strings"
+
+    "github.com/ethereum/go-ethereum/accounts/abi"
     "github.com/ethereum/go-ethereum/common"
-    "github.com/ethereum/go-ethereum/ethclient"
-   "github.com/ethereum/go-ethereum/accounts/abi"
     "github.com/ethereum/go-ethereum/core/types"
     "github.com/ethereum/go-ethereum/crypto"
-    "strings"
-    "encoding/hex"
-
-
+    "github.com/ethereum/go-ethereum/ethclient"
+    "github.com/spf13/viper"
 )
 
+// TemperatureData represents the structure for storing temperature data.
 type TemperatureData struct {
-    DeviceId    int64  `json:"deviceId"`
+    DeviceId    int64   `json:"deviceId"`
     Temperature float64 `json:"temperature"`
     Unit        string  `json:"unit"`
     Timestamp   string  `json:"timestamp"`
 }
 
+// Init initializes a connection to the Ethereum blockchain.
 func Init() {
-
-    client, err := ethclient.Dial("http://localhost:7545")
+    client, err := ethclient.Dial("ws://localhost:7545")
     if err != nil {
-        log.Fatalf("Wrong: %v", err)
+        log.Fatalf("Unable to connect to Ethereum client: %v", err)
     }
-    fmt.Println("Connection to BlockChain -------------------------------- Success!!!")
-    
-    
-    
+
     blockNumber, err := client.BlockNumber(context.Background())
     if err != nil {
         log.Fatalf("Failed to get the latest block number: %v", err)
@@ -43,84 +40,13 @@ func Init() {
     fmt.Println("Connection to Ethereum network successful!")
 }
 
-
-/*
-func SendToContract(data TemperatureData) error {
-
-    viper.SetConfigName("config")
-    viper.SetConfigType("yaml")
-    viper.AddConfigPath(".")
-    err := viper.ReadInConfig()
-    if err != nil {
-        log.Fatalf("Fatal error config file: %v \n", err)
-    }
-
-    ethereumNodeURL := viper.GetString("ethereumNodeURL")
-    privateKeyString := viper.GetString("privateKey")
-    contractAddressString := viper.GetString("DataCollectionContractAddress")
-    dataCollectionABI := viper.GetString("DataCollectionabi")
-
-
-
-
-
-    client, err := ethclient.Dial(ethereumNodeURL)
-    if err != nil {
-        return err
-    }
-
-    privateKey, err := crypto.HexToECDSA(privateKeyString)
-    if err != nil {
-        return err
-    }
-
-    fromAddress := crypto.PubkeyToAddress(privateKey.PublicKey)
-    nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
-    if err != nil {
-        return err
-    }
-
-    gasPrice, err := client.SuggestGasPrice(context.Background())
-    if err != nil {
-        return err
-    }
-
-    contractABI, err := abi.JSON(strings.NewReader(dataCollectionABI))
-    if err != nil {
-        return err
-    }
-
-    contractAddress := common.HexToAddress(contractAddressString)
-    timestamp, _ := time.Parse(time.RFC3339, data.Timestamp)
-    txData, err := contractABI.Pack("addData", big.NewInt(int64(data.DeviceId)), big.NewInt(timestamp.Unix()), big.NewInt(int64(data.Temperature)))
-    if err != nil {
-        return err
-    }
-
-    chainID := big.NewInt(1337) // Replace with your chain ID
-    tx := types.NewTransaction(nonce, contractAddress, big.NewInt(0), uint64(3000000), gasPrice, txData)
-    signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), privateKey)
-    if err != nil {
-        return err
-    }
-
-    err = client.SendTransaction(context.Background(), signedTx)
-    if err != nil {
-        return err
-    }
-
-    fmt.Printf("Transaction sent: %s\n", signedTx.Hash().Hex())
-    return nil
-}*/
-
-// Adjust the function signature to accept device ID and hashed data
+// SendHashToContract sends a hash to the smart contract on the blockchain.
 func SendHashToContract(deviceId int64, dataHashString string) error {
     viper.SetConfigName("config")
     viper.SetConfigType("yaml")
     viper.AddConfigPath("..")
-    err := viper.ReadInConfig()
-    if err != nil {
-        log.Fatalf("Fatal error config file: %v \n", err)
+    if err := viper.ReadInConfig(); err != nil {
+        log.Fatalf("Fatal error reading config file: %v \n", err)
     }
 
     ethereumNodeURL := viper.GetString("ethereumNodeURL")
@@ -128,76 +54,62 @@ func SendHashToContract(deviceId int64, dataHashString string) error {
     contractAddressString := viper.GetString("DataCollectionContractAddress")
     dataCollectionABI := viper.GetString("DataCollectionabi")
 
-    client, err := ethclient.Dial(ethereumNodeURL)
-    if err != nil {
-        return err
-    }
-
     privateKey, err := crypto.HexToECDSA(privateKeyString)
     if err != nil {
-        return err
+        return fmt.Errorf("unable to parse private key: %v", err)
+    }
+    client, err := ethclient.Dial(ethereumNodeURL)
+    if err != nil {
+        return fmt.Errorf("unable to connect to Ethereum client: %v", err)
     }
 
     fromAddress := crypto.PubkeyToAddress(privateKey.PublicKey)
     nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
     if err != nil {
-        return err
+        return fmt.Errorf("unable to get pending nonce: %v", err)
     }
 
     gasPrice, err := client.SuggestGasPrice(context.Background())
     if err != nil {
-        return err
+        return fmt.Errorf("unable to suggest gas price: %v", err)
     }
 
     contractABI, err := abi.JSON(strings.NewReader(dataCollectionABI))
     if err != nil {
-        return err
+        return fmt.Errorf("unable to parse ABI: %v", err)
     }
 
     contractAddress := common.HexToAddress(contractAddressString)
 
+    dataHash, err := hex.DecodeString(dataHashString)
+    if err != nil {
+        return fmt.Errorf("unable to decode hash string: %v", err)
+    }
 
+    if len(dataHash) != 32 {
+        return fmt.Errorf("hashed data is not the correct length to be a bytes32")
+    }
 
+    var dataHashArray [32]byte
+    copy(dataHashArray[:], dataHash)
 
-
-// Convert the string hash back to a byte slice to match the expected type
-dataHash, err := hex.DecodeString(dataHashString)
-if err != nil {
-    return err
-}
-
-// Ensure the byte slice is the correct length for a bytes32 type
-if len(dataHash) != 32 {
-    return fmt.Errorf("hashed data is not the correct length to be a bytes32")
-}
-
-// Convert slice to array
-var dataHashArray [32]byte
-copy(dataHashArray[:], dataHash)
-
-// Create transaction data using the `recordDataHash` method, adjusting for the correct parameter types
-txData, err := contractABI.Pack("recordDataHash", deviceId, dataHashArray) // 使用数组而不是切片
-if err != nil {
-    return err
-}
-
-
-
+    txData, err := contractABI.Pack("recordDataHash", deviceId, dataHashArray)
+    if err != nil {
+        return fmt.Errorf("unable to pack transaction data: %v", err)
+    }
 
     chainID := big.NewInt(1337) // Replace with your chain ID
     tx := types.NewTransaction(nonce, contractAddress, big.NewInt(0), uint64(3000000), gasPrice, txData)
     signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), privateKey)
     if err != nil {
-        return err
+        return fmt.Errorf("unable to sign transaction: %v", err)
     }
 
-    err = client.SendTransaction(context.Background(), signedTx)
-    if err != nil {
-        return err
+    if err := client.SendTransaction(context.Background(), signedTx); err != nil {
+        return fmt.Errorf("unable to send transaction: %v", err)
     }
 
     fmt.Printf("Transaction sent: %s\n", signedTx.Hash().Hex())
     return nil
 }
-
 

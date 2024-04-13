@@ -156,20 +156,18 @@
 
         document.getElementById("showAllDevicesButton").addEventListener("click", async () => {
     try {
-        // First, get the total number of devices
         const deviceCount = await infoContract.methods.deviceIndex().call();
         let allDevicesInfo = "";
 
         // Iterate over all device IDs, starting from 1, as device IDs may start from 1 in the contract
         for (let i = 1; i <= deviceCount; i++) {
-            // For each device ID, call the getDevice method to fetch its information
             const deviceInfo = await infoContract.methods.getDevice(i).call();
 
-            // Build the HTML string for device information
+            
             allDevicesInfo += `ID: ${deviceInfo[0]}<br>Name: ${deviceInfo[1]}<br>Category: ${deviceInfo[2]}<br>Image Link: ${deviceInfo[3]}<br>Description Link: ${deviceInfo[4]}<br>Device Start Time: ${new Date(deviceInfo[5] * 1000).toLocaleString()}<br>Status: ${deviceInfo[6] == 0 ? 'Open' : 'Close'}<br><br>`;
         }
 
-        // Display all device information on the page
+        
         document.getElementById("deviceInfo").innerHTML = allDevicesInfo;
     } catch (error) {
         console.error("Error occurred:", error);

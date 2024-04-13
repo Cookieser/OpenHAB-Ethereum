@@ -4,9 +4,9 @@ database:
   host: localhost
   port: 3306
   dbname: DataCollection
-ethereumNodeURL: "http://localhost:7545"
-privateKey: "bfc9398e9d23cbe2cc81114096f2123893313f6c3280972b602af39ab08494aa"
-DataCollectionContractAddress: "0x84f0eB60E8a4828470dCfbA5A06B8Fb2A44C172D"
+ethereumNodeURL: "ws://localhost:7545"
+privateKey: "7da30821020c8ffd00d07e175dc372c66f86063de09774b34b7ba170783c3276"
+DataCollectionContractAddress: "0xe19da45285ab880d0ab80ec48047adaf144a2094"
 DataCollectionabi: >
  [
   {
