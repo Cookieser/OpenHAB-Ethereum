@@ -112,10 +112,8 @@ Record some interesting problems and thoughts discovered during the project:
 
 # Unfinished Task
 * The custom properties in the vertify section are not completely separated
-* The operationmanage section will also be handled with specifications
-* Add more little function to show the extensibility
+* The operationManage section and deviceManage haven't been finished
+* Reconstruct the Tool part
 * Add DID into the system
-* test the whole system, and debug
-* Reconstructure the system to  embody the connection between openhab and blockchain
 * Add special notes and upadate README 
 
