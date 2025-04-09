@@ -110,10 +110,4 @@ Record some interesting problems and thoughts discovered during the project:
 - Explore adding layer 2 solutions, such as [Optimistic Rollup](https://blog.thirdweb.com/what-is-an-optimistic-rollup/), to improve efficiency.
 - Combine with [Zero-Knowledge Proof](https://en.wikipedia.org/wiki/Zero-knowledge_proof) for subsequent work.
 
-# Unfinished Task
-* The custom properties in the vertify section are not completely separated
-* The operationManage section and deviceManage haven't been finished
-* Reconstruct the Tool part
-* Add DID into the system
-* Add special notes and upadate README 
 
