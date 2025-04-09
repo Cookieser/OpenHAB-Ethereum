@@ -9,13 +9,13 @@
 
 ## Part 1: Building the Simplest Prototype System
 
-### Blockchain Setup (Preliminary Ethereum Setup) √
+### Blockchain Setup (Preliminary Ethereum Setup) 
 
 The basic setup and operation of the Ethereum blockchain have been completed, enabling the running of blockchain nodes under Linux and performing basic command tests.
 
 See documentation for specific process records: `Notes/blockChainBuild.md`
 
-### Contract Development √
+### Contract Development 
 
 Completed the writing of contracts for **adding devices** and **displaying registered devices**.
 
@@ -25,7 +25,7 @@ Knowledge and advantages of Events: `Notes/Event.md`
 
 Contract: `Contract/DeviceStore.sol`
 
-### Web Page Visualization Writing √
+### Web Page Visualization Writing 
 
 > How to use: Use [Remix](https://remix.ethereum.org/) to connect to [Ganache](https://archive.trufflesuite.com/docs/ganache/) for contract testing.
 >
@@ -51,7 +51,7 @@ This part analyzes the requirements of the entire system, realizes the integrati
 
 See documentation: `systemDesign.md`
 
-### MongoDB Environment Setup √
+### MongoDB Environment Setup 
 
 Completed the MongoDB environment setup in a virtual machine, facilitating subsequent synchronization updates between blockchain and MongoDB.
 
